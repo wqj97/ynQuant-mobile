@@ -159,7 +159,9 @@ class BaseDetail extends React.Component {
         </Swiper>
         <View style={styles.writeNote}>
           <View style={styles.writeNoteTitle}>
-            <Text style={[styles.writeTextFont, { color: '#737783' }]}>信息</Text>
+            <View style={styles.topLine}>
+              <Text style={[styles.writeTextFont, { color: '#737783' }]}>信息</Text>
+            </View>
             <Text style={[styles.writeTextFont, { color: '#b5b7bd' }]}>笔记: 15个</Text>
           </View>
           <View style={styles.btnWrap}>
@@ -192,6 +194,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 16
+  },
+  topLine: {
+    borderTopWidth: 3,
+    borderTopColor: '#1677CB',
+    marginTop: -16,
+    paddingTop: 13
   },
   arrowWrap: {
     flexDirection: 'row',

@@ -27,6 +27,7 @@ class BaseIntroduce extends React.Component {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.contentWrap}>
+          <View style={{ position: 'absolute', bottom: 0, width: '100%', height: '100%', backgroundColor: '#fff', borderRadius: 7 }} />
           <Image
             source={require('../../../images/knowledge/foreignExchange.png')}
             style={styles.img}
@@ -39,6 +40,8 @@ class BaseIntroduce extends React.Component {
           <Text onPress={() => this._replaceTo()} style={[styles.btnText, styles.continueColor]}>
             开始
           </Text>
+          <View style={[styles.contentWrapShadow, styles.contentWrapShadow1]} />
+          <View style={[styles.contentWrapShadow, styles.contentWrapShadow2]} />
         </View>
       </SafeAreaView>
     )
@@ -58,6 +61,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 7,
     marginBottom: 20
+  },
+  contentWrapShadow: {
+    position: 'absolute',
+    alignSelf: 'center',
+    height: '100%',
+    borderRadius: 7
+  },
+  contentWrapShadow1: {
+    width: '97.1%',
+    bottom: -10,
+    zIndex: -10,
+    backgroundColor: '#777777'
+  },
+  contentWrapShadow2: {
+    width: '94.2%',
+    bottom: -20,
+    zIndex: -12,
+    backgroundColor: '#464646'
   },
   img: {
     width: '100%',
