@@ -1,9 +1,10 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import CheckBox from 'react-native-check-box'
 import Note from '../../../components/Note/Note'
 import Comment from '../../../components/Comment/Comment'
 import { knowledgeCommentsList } from '../../../service/getData'
+
 // import {} from '../../../service/getData'
 
 class BaseWriteNote extends React.Component {
@@ -14,6 +15,7 @@ class BaseWriteNote extends React.Component {
       commentData: []
     }
   }
+
   componentDidMount () {
     console.log(this.props.navigation.state.params.id)
     knowledgeCommentsList(this.props.navigation.state.params.id)
@@ -41,12 +43,14 @@ class BaseWriteNote extends React.Component {
           </View>
           <Note id={this.props.navigation.state.params.id} goBack={goBack} type={1} />
         </View>
-        <View style={styles.writeNoteWrap}>
-          <Text>精彩笔记：</Text>
+        <Text>精彩笔记：</Text>
+        <ScrollView style={[styles.writeNoteWrap, {
+          marginBottom: 15
+        }]}>
           {this.state.commentData.map(item => {
             return <Comment data={item} />
           })}
-        </View>
+        </ScrollView>
         <View style={styles.writeNote}>
           <View style={styles.btnWrap}>
             <TouchableOpacity onPress={() => goBack()}>

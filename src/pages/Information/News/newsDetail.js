@@ -5,8 +5,10 @@ import RefreshListView, { RefreshState } from 'react-native-refresh-list-view'
 import { newsDetail, newsComments } from '../../../service/getData'
 import Comment from '../../../components/Comment/Comment'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
+import Echarts from 'native-echarts'
 
 const width = Dimensions.get('window').width
+
 // TODO:返回页面刷新
 class NewsDetail extends React.PureComponent {
   constructor (props) {
@@ -81,8 +83,53 @@ class NewsDetail extends React.PureComponent {
   }
 
   _renderHeaderLayout () {
+    const analysis = this.props.navigation.state.params.content.analysis
+    let selected = parseInt(Math.floor(analysis.negative * 100)) >  parseInt(Math.floor(analysis.positive * 100))
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        x: 'left',
+        data: ['利空', '利好']
+      },
+      series: [
+        {
+          name: '预测',
+          type: 'pie',
+          roseType: true,
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            normal: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: [
+            {name: '利空', value: parseInt(Math.floor(analysis.negative * 100))},
+            {name: '利好', value: parseInt(Math.floor(analysis.positive * 100))}
+          ]
+        }
+      ]
+    }
     return (
       <View style={{ marginTop: 16 }}>
+        <Echarts option={option} height={300} />
         <Text style={styles.textStyle}>
           {getLineBreak(this.params.content.content, /\n/g, '\n\n')}
         </Text>

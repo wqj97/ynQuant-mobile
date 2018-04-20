@@ -22,7 +22,7 @@ class BaseKnowledge extends React.Component {
   render () {
     const { navigate, push } = this.props.navigation
     return (
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1}} contentContainerStyle={{paddingBottom: 16}}>
         {this.state.data.map(item => {
           const page = item.user_page_tag ? item.user_page_tag.page : 0
           const totalPage = item.total_count ? item.total_count : 0
