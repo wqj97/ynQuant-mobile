@@ -35,7 +35,7 @@ class BaseKnowledge extends React.Component {
                   content: item.content,
                   title: item.title,
                   id: item.id,
-                  page: page
+                  user_page_tag: page
                 })
               }
               key={item.id}

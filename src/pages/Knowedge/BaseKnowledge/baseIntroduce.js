@@ -15,7 +15,7 @@ class BaseIntroduce extends React.Component {
       params: {
         id: this.props.navigation.state.params.id,
         title: this.props.navigation.state.params.title,
-        currentPage: this.props.navigation.state.params.page
+        currentPage: this.props.navigation.state.params.user_page_tag || 0
       },
       immediate: true
     })

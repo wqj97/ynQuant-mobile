@@ -12,7 +12,7 @@ const propTypes = {
   // data: PropTypes.array.isRequired
 }
 
-class TimeLine extends React.Component {
+class TimeLine extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {

@@ -3,20 +3,17 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, WebView } from 'react-
 import Swiper from 'react-native-swiper'
 import { knowledge, knowlegePageChange } from '../../../service/getData'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
-
-// TODO: 翻页请求
+// FIXME: 何时交易和为什么交易外汇，有 bug，原因是标题被顶下去的原因，很迷。。。
 class BaseDetail extends React.Component {
   constructor (props) {
     super(props)
     this.swiperRef = swiper => (this.swiper = swiper)
     this.state = {
-      currentPageNum: props.navigation.state.params
-        ? props.navigation.state.params.currentPage - 1
-        : 0, // 页数
+      currentPageNum: props.navigation.state.params.currentPage,
       maxPage: 0,
       data: []
     }
-    console.log(props)
+    this.initPage = props.navigation.state.params.currentPage
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -38,14 +35,19 @@ class BaseDetail extends React.Component {
       .then(res => {
         this.setState({
           data: res,
-          maxPage: res.length - 1
+          maxPage: res.length
         })
-        this.forceUpdate()
-        // this.swiper.scrollBy(this.props.navigation.state.params.currentPage - 1, true)
-        this.props.navigation.setParams({
-          total: res.length,
-          page: res[this.state.currentPageNum].page
-        })
+        if (this.state.maxPage === this.state.currentPageNum) {
+          this.props.navigation.setParams({
+            total: res.length,
+            page: res[this.state.currentPageNum - 1].page
+          })
+        } else {
+          this.props.navigation.setParams({
+            total: res.length,
+            page: res[this.state.currentPageNum].page
+          })
+        }
       })
       .catch(err => console.log(err))
   }
@@ -62,7 +64,7 @@ class BaseDetail extends React.Component {
 
   // 下一页
   nextPage = () => {
-    if (this.state.currentPageNum !== this.state.maxPage) {
+    if (this.state.currentPageNum !== this.state.maxPage - 1) {
       this.setState({
         currentPageNum: this.state.currentPageNum + 1
       })
@@ -71,6 +73,9 @@ class BaseDetail extends React.Component {
   }
 
   handleIndexChange = index => {
+    this.setState({
+      currentPageNum: index
+    })
     if (!this.state.data[index]) {
       return
     }
@@ -81,18 +86,12 @@ class BaseDetail extends React.Component {
       id: this.props.navigation.state.params.id,
       page: this.state.data[index].page
     })
-    this.setState({
-      currentPageNum: index
-    })
-    this.forceUpdate()
   }
 
   render () {
     const { navigate } = this.props.navigation
-    // console.log(this.state.currentPageNum)
-    // let text =
-    //   '交易型开放式指数基金，通常又被称为交易所交易基金（Exchange Traded Funds，简称“ETF”），是一种在交易所上市交易的、基金份额可变的一种开放式基金。<br />交易型开放式指数基金属于开放式基金的一种特殊类型，它结合了封闭式基金和开放式基金的运作特点，投资者既可以向基金管理公司申购或赎回基金份额，同时，又可以像封闭式基金一样在二级市场上按市场价格买卖ETF份额，不过，申购赎回必须以一篮子股票换取基金份额或者以基金份额换回一篮子股票。<br />由于同时存在证券市场交易和申购赎回机制，投资者可以在ETF市场价格与基金单位净值之间存在差价时进行套利交易。套利机制的存在，使得ETF避免了封闭式基金普遍存在的折价问题。'
-    // text = getLineBreak(text, /<br \/>/g, '\n\n')
+    console.log('this.state.currentPageNum', this.state.currentPageNum)
+    console.log('this.state.maxPage', this.state.maxPage)
     return (
       <View style={styles.container}>
         <View style={styles.titleAndBtn}>
@@ -102,9 +101,9 @@ class BaseDetail extends React.Component {
               color: '#fff'
             }}
           >
-            {this.state.data[this.state.currentPageNum]
+            {/* {this.state.data[this.state.currentPageNum]
               ? this.state.data[this.state.currentPageNum].title
-              : ''}
+              : ''} */}
           </Text>
           <View style={styles.arrowWrap}>
             <TouchableOpacity onPress={this.prePage}>
@@ -125,7 +124,7 @@ class BaseDetail extends React.Component {
             <TouchableOpacity onPress={this.nextPage}>
               <Image
                 source={
-                  this.state.currentPageNum < this.state.maxPage
+                  this.state.currentPageNum < this.state.maxPage - 1
                     ? require('../../../images/knowledge/Arrow/rightArrow-active.png')
                     : require('../../../images/knowledge/Arrow/rightArrow.png')
                 }
@@ -135,12 +134,12 @@ class BaseDetail extends React.Component {
           </View>
         </View>
         <Swiper
-          index={this.props.navigation.state.params.currentPage - 1}
+          index={this.initPage}
           onIndexChanged={this.handleIndexChange}
           loop={false}
           showsPagination={false}
           loadMinimal
-          loadMinimalSize={3}
+          loadMinimalSize={100}
           ref={this.swiperRef}
           key={this.state.data.length}
         >
@@ -149,7 +148,7 @@ class BaseDetail extends React.Component {
               // <ScrollView style={styles.content} key={item.id}>
               //   <Text style={styles.contentText}>{item.content}</Text>
               // </ScrollView>
-              <View style={styles.content}>
+              <View style={styles.content} key={item.id}>
                 <WebView
                   source={{ uri: 'https://ynQuant.clarkwan.com/knowledge/show?id=' + item.id }}
                 />

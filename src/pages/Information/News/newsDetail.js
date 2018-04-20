@@ -1,11 +1,12 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native'
 import { getLineBreak } from '../../../config/utils'
 import RefreshListView, { RefreshState } from 'react-native-refresh-list-view'
 import { newsDetail, newsComments } from '../../../service/getData'
 import Comment from '../../../components/Comment/Comment'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 
+const width = Dimensions.get('window').width
 // TODO:返回页面刷新
 class NewsDetail extends React.PureComponent {
   constructor (props) {
@@ -13,7 +14,9 @@ class NewsDetail extends React.PureComponent {
     this.state = {
       refreshState: RefreshState.Idle,
       commentData: [],
-      data: []
+      data: [],
+      isStar: false,
+      star: 0
     }
     const { params } = props.navigation.state
     this.params = params
@@ -43,17 +46,14 @@ class NewsDetail extends React.PureComponent {
         console.log(err)
       })
   }
-  // componentWillReceiveProps (nextProps) {
-  //   const { params } = this.props.navigation.state
-  //   this.params = params
-  //   if (nextProps) {
-  //     newsDetail(params.id)
-  //       .then(res => {
-  //         this.setState({ commentData: res.comments, data: res })
-  //       })
-  //       .catch(err => console.log(err))
-  //   }
-  // }
+  _star = () => {
+    this.setState({ isStar: !this.state.isStar })
+    if (!this.state.isStar) {
+      this.setState({ star: this.state.star + 1 })
+    } else {
+      this.setState({ star: this.state.star - 1 })
+    }
+  }
   onHeaderRefresh = () => {
     this.setState({ refreshState: RefreshState.HeaderRefreshing })
     this.page = 1
@@ -114,7 +114,14 @@ class NewsDetail extends React.PureComponent {
           />
         </View>
         <View style={styles.bottomBarWrap}>
-          <View style={styles.bottomBarIconWarp}>
+          <View
+            style={[
+              styles.bottomBarIconWarp,
+              {
+                marginLeft: 37
+              }
+            ]}
+          >
             <Image
               source={require('../../../images/Information/watch.png')}
               style={styles.watchIcon}
@@ -122,7 +129,13 @@ class NewsDetail extends React.PureComponent {
             <Text style={styles.bottomBarText}>{this.state.data.views_count}</Text>
           </View>
           <TouchableOpacity
-            style={styles.bottomBarIconWarp}
+            style={[
+              styles.bottomBarIconWarp,
+              {
+                position: 'absolute',
+                left: width / 2 - 12
+              }
+            ]}
             onPress={() => {
               let { navigate } = this.props.navigation
               navigate('WriteComment', {
@@ -137,12 +150,28 @@ class NewsDetail extends React.PureComponent {
             />
             <Text style={styles.bottomBarText}>{this.state.data.comments_count}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomBarIconWarp}>
+          <TouchableOpacity
+            style={[
+              styles.bottomBarIconWarp,
+              {
+                position: 'absolute',
+                right: 53
+              }
+            ]}
+            onPress={this._star}
+          >
             <Image
-              source={require('../../../images/Information/Star.png')}
+              source={
+                this.state.isStar
+                  ? require('../../../images/Information/Star-active.png')
+                  : require('../../../images/Information/Star.png')
+              }
               style={styles.starIcon}
             />
-            <Text style={styles.bottomBarText}>{this.state.data.views_count}</Text>
+            <Text style={[styles.bottomBarText, {
+              position: 'absolute',
+              left: 20
+            }]}>{this.state.star}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -168,15 +197,17 @@ const styles = StyleSheet.create({
   },
   bottomBarWrap: {
     width: '100%',
-    ...ifIphoneX({
-      height: 59
-    }, {
-      height: 49
-    }),
+    ...ifIphoneX(
+      {
+        height: 59
+      },
+      {
+        height: 49
+      }
+    ),
     backgroundColor: 'rgba(9, 76, 144, 1.000)',
     bottom: 0,
     position: 'absolute',
-    justifyContent: 'space-around',
     alignItems: 'center',
     flexDirection: 'row'
   },
