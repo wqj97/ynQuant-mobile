@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, WebView } from 'react-
 import Swiper from 'react-native-swiper'
 import { knowledge, knowlegePageChange } from '../../../service/getData'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
-// FIXME: 何时交易和为什么交易外汇，有 bug，原因是标题被顶下去的原因，很迷。。。
+// import {trim} from '../../../config/utils'
+// FIXME: 何时交易和为什么交易外汇，有 bug，原因是标题被顶下去的原因，很迷。。。具体原因是字体的问题
 class BaseDetail extends React.Component {
   constructor (props) {
     super(props)
@@ -37,10 +38,10 @@ class BaseDetail extends React.Component {
           data: res,
           maxPage: res.length
         })
-        if (this.state.maxPage === this.state.currentPageNum) {
+        if (this.state.maxPage === this.state.currentPageNum - 1) {
           this.props.navigation.setParams({
             total: res.length,
-            page: res[this.state.currentPageNum - 1].page
+            page: res[this.state.currentPageNum].page
           })
         } else {
           this.props.navigation.setParams({
@@ -50,6 +51,10 @@ class BaseDetail extends React.Component {
         }
       })
       .catch(err => console.log(err))
+    knowlegePageChange({
+      id: this.props.navigation.state.params.id,
+      page: this.state.data[this.state.currentPageNum] ? this.state.data[this.state.currentPageNum].page : 1
+    })
   }
 
   // 上一页
@@ -90,20 +95,22 @@ class BaseDetail extends React.Component {
 
   render () {
     const { navigate } = this.props.navigation
-    console.log('this.state.currentPageNum', this.state.currentPageNum)
-    console.log('this.state.maxPage', this.state.maxPage)
+    // console.log('this.state.currentPageNum', this.state.currentPageNum)
+    // console.log('this.state.maxPage', this.state.maxPage)
+    // console.log('this.initPage ', this.initPage)
     return (
       <View style={styles.container}>
         <View style={styles.titleAndBtn}>
           <Text
             style={{
               fontSize: 20,
-              color: '#fff'
+              color: '#fff',
+              fontFamily: 'PingFangSC-Regular'
             }}
           >
-            {/* {this.state.data[this.state.currentPageNum]
+            {this.state.data[this.state.currentPageNum]
               ? this.state.data[this.state.currentPageNum].title
-              : ''} */}
+              : ''}
           </Text>
           <View style={styles.arrowWrap}>
             <TouchableOpacity onPress={this.prePage}>
@@ -139,7 +146,7 @@ class BaseDetail extends React.Component {
           loop={false}
           showsPagination={false}
           loadMinimal
-          loadMinimalSize={100}
+          loadMinimalSize={10}
           ref={this.swiperRef}
           key={this.state.data.length}
         >
