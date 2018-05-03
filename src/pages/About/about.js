@@ -126,9 +126,9 @@ class AboutScreen extends React.Component {
               <Text style={styles.utilText}>消息</Text>
             </View>
             <View style={styles.infoAndArrow}>
-              <View style={styles.info}>
+              {user ? (<View style={styles.info}>
                 <Text style={styles.infoText}>1</Text>
-              </View>
+              </View>) : ''}
               <Image
                 source={require('../../images/about/rightArrow.png')}
                 style={[

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import Toast from 'react-native-root-toast'
 import { register, init } from './registerAction'
 import Loading from '../../components/Loading'
+import {ifIphoneX} from 'react-native-iphone-x-helper'
 
 const mapStateToProps = state => {
   return state.Register
@@ -358,10 +359,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#ECEFF1',
-    height: 44
+    ...ifIphoneX({
+      height: 64
+    }, {
+      height: 44
+    })
   },
   footerFix: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    ...ifIphoneX({
+      marginBottom: 15
+    })
   },
   remindText: {
     color: '#777777'

@@ -168,7 +168,7 @@ class BaseDetail extends React.Component {
             <View style={styles.topLine}>
               <Text style={[styles.writeTextFont, { color: '#737783' }]}>信息</Text>
             </View>
-            <Text style={[styles.writeTextFont, { color: '#b5b7bd' }]}>笔记: 15个</Text>
+            <Text style={[styles.writeTextFont, { color: '#b5b7bd' }]}>笔记: {this.state.data[this.state.currentPageNum] ? this.state.data[this.state.currentPageNum].comments_count : 0}个</Text>
           </View>
           <View style={styles.btnWrap}>
             <TouchableOpacity

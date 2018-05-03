@@ -13,6 +13,7 @@ const width = Dimensions.get('window').width
 class NewsDetail extends React.PureComponent {
   constructor (props) {
     super(props)
+    const analysis = this.props.navigation.state.params.content.analysis
     this.state = {
       refreshState: RefreshState.Idle,
       commentData: [],
@@ -23,6 +24,48 @@ class NewsDetail extends React.PureComponent {
     const { params } = props.navigation.state
     this.params = params
     this.page = 1
+    this.echartsOption = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b}: {c} ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        x: 'left',
+        data: ['利空', '利好']
+      },
+      series: [
+        {
+          name: '预测',
+          type: 'pie',
+          roseType: true,
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            normal: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: [
+            { name: '利空', value: parseInt(Math.floor(analysis.negative * 100)) },
+            { name: '利好', value: parseInt(Math.floor(analysis.positive * 100)) }
+          ]
+        }
+      ]
+    }
   }
 
   _keyExtractor = (item, index) => item.id + ''
@@ -78,58 +121,14 @@ class NewsDetail extends React.PureComponent {
       .catch(err => console.log(err))
   }
 
-  _renderEmptyLayout () {
+  _renderEmptyLayout = () => {
     return <Text style={{ alignSelf: 'center', marginTop: 20 }}>暂无数据</Text>
   }
 
-  _renderHeaderLayout () {
-    const analysis = this.props.navigation.state.params.content.analysis
-    let selected = parseInt(Math.floor(analysis.negative * 100)) >  parseInt(Math.floor(analysis.positive * 100))
-    const option = {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)'
-      },
-      legend: {
-        orient: 'vertical',
-        x: 'left',
-        data: ['利空', '利好']
-      },
-      series: [
-        {
-          name: '预测',
-          type: 'pie',
-          roseType: true,
-          radius: ['50%', '70%'],
-          avoidLabelOverlap: false,
-          label: {
-            normal: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              show: true,
-              textStyle: {
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            }
-          },
-          labelLine: {
-            normal: {
-              show: false
-            }
-          },
-          data: [
-            {name: '利空', value: parseInt(Math.floor(analysis.negative * 100))},
-            {name: '利好', value: parseInt(Math.floor(analysis.positive * 100))}
-          ]
-        }
-      ]
-    }
+  _renderHeaderLayout = () => {
     return (
       <View style={{ marginTop: 16 }}>
-        <Echarts option={option} height={300} />
+        <Echarts option={this.echartsOption} height={300} />
         <Text style={styles.textStyle}>
           {getLineBreak(this.params.content.content, /\n/g, '\n\n')}
         </Text>
@@ -156,17 +155,14 @@ class NewsDetail extends React.PureComponent {
             ListEmptyComponent={this._renderEmptyLayout}
             onHeaderRefresh={this.onHeaderRefresh}
             keyExtractor={this._keyExtractor}
-            ListHeaderComponent={() => this._renderHeaderLayout()}
-            ListFooterComponent={() => this._renderFooterLayout()}
+            ListHeaderComponent={this._renderHeaderLayout()}
+            ListFooterComponent={this._renderFooterLayout()}
           />
         </View>
         <View style={styles.bottomBarWrap}>
-          <View
+          <TouchableOpacity
             style={[
-              styles.bottomBarIconWarp,
-              {
-                marginLeft: 37
-              }
+              styles.bottomBarIconWarp
             ]}
           >
             <Image
@@ -174,14 +170,10 @@ class NewsDetail extends React.PureComponent {
               style={styles.watchIcon}
             />
             <Text style={styles.bottomBarText}>{this.state.data.views_count}</Text>
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[
-              styles.bottomBarIconWarp,
-              {
-                position: 'absolute',
-                left: width / 2 - 12
-              }
+              styles.bottomBarIconWarp
             ]}
             onPress={() => {
               let { navigate } = this.props.navigation
@@ -199,11 +191,7 @@ class NewsDetail extends React.PureComponent {
           </TouchableOpacity>
           <TouchableOpacity
             style={[
-              styles.bottomBarIconWarp,
-              {
-                position: 'absolute',
-                right: 53
-              }
+              styles.bottomBarIconWarp
             ]}
             onPress={this._star}
           >
@@ -256,12 +244,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     position: 'absolute',
     alignItems: 'center',
+    justifyContent: 'space-around',
     flexDirection: 'row'
   },
   bottomBarIconWarp: {
     flexDirection: 'row',
     ...ifIphoneX({
-      marginBottom: 10
+      marginBottom: 15
     })
   },
   bottomBarText: {

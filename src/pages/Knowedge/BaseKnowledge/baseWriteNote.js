@@ -39,17 +39,17 @@ class BaseWriteNote extends React.Component {
         <View style={styles.writeNoteWrap}>
           <View style={styles.informationWrap}>
             <Text>信息</Text>
-            <Text>笔记：15个</Text>
+            <Text>笔记：{this.state.commentData.length}个</Text>
           </View>
-          <Note id={this.props.navigation.state.params.id} goBack={goBack} type={1} />
+          <View style={{marginLeft: -8, marginRight: -8}}>
+            <Note id={this.props.navigation.state.params.id} goBack={goBack} type={1} />
+          </View>
         </View>
-        <Text>精彩笔记：</Text>
-        <ScrollView style={[styles.writeNoteWrap, {
-          marginBottom: 15
-        }]}>
-          {this.state.commentData.map(item => {
+        <Text style={styles.writeNoteTitle}>精彩笔记：</Text>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.writeNoteWrap} contentContainerStyle={{paddingBottom: 96}}>
+          {this.state.commentData.length ? this.state.commentData.map(item => {
             return <Comment data={item} />
-          })}
+          }) : <Text style={styles.emptyNote}>暂无笔记</Text>}
         </ScrollView>
         <View style={styles.writeNote}>
           <View style={styles.btnWrap}>
@@ -81,6 +81,15 @@ const styles = StyleSheet.create({
   },
   inputContentWrap: {
     marginTop: 16
+  },
+  writeNoteTitle: {
+    color: '#6A6F7B',
+    marginLeft: 16
+  },
+  emptyNote: {
+    marginTop: 16,
+    color: '#6A6F7B',
+    alignSelf: 'center'
   },
   inputContent: {
     backgroundColor: '#f0f0f0',
